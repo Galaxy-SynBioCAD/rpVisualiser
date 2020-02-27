@@ -1,4 +1,4 @@
-FROM brsynth/rprest
+FROM brsynth/rprest:dev
 
 RUN conda install -y -c rdkit rdkit=2019.03.1.0
 RUN conda install -y -c bioconda python-libsbml
