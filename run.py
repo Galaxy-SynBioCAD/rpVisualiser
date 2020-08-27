@@ -70,6 +70,7 @@ def main(inputTar,
             print(err_str)
             shutil.copy(tmpOutputFolder+'/output.dat', output)
         else:
+            print(err_str)
             shutil.copy(tmpOutputFolder+'/output.dat', output)
         container.remove()
 
