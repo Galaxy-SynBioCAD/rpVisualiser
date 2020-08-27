@@ -38,6 +38,16 @@ if __name__ == '__main__':
     parser.add_argument('--autonomous_html',
                         default=None,
                         help="Optional file path, if provided will output an autonomous HTML containing all dependancies.")
+    # For survey version only
+    parser.add_argument('--survey_chassis_name',
+                        default="not available",
+                        help='Chassis name to be displayed in the viewer.')
+    parser.add_argument('--survey_target_name',
+                        default="not available",
+                        help='Target name to be displayed in the viewer.')
+    parser.add_argument('--survey_unique_id', required=True,
+                        help='Unique ID to be used in the viewer to prefill the '
+                        'survey form.')
     args = parser.parse_args()
 
     # Logging
@@ -72,6 +82,25 @@ if __name__ == '__main__':
     # Build the Viewer
     viewer = Viewer(out_folder=args.output_folder, template_folder=args.template_folder)
     viewer.copy_templates()
+    
+    # Widely insert the survey ID
+    with open(viewer.html_file, 'r') as ifh:
+        html_str = ifh.read()
+    html_str = html_str.replace('LANDMARK_SURVEY_ID', args.survey_unique_id)
+    try:
+        assert args.survey_unique_id in html_str
+    except AssertionError:
+        logging.error('Survey ID has not been injected, exit')
+        sys.exit(1)
+    with open(viewer.html_file, 'w') as ofh:
+        ofh.write(html_str)
+    
+    # Additional object to store contextual info
+    contextual_info = {
+        'survey_chassis_name': args.survey_chassis_name,
+        'survey_target_name': args.survey_target_name,
+        'survey_unique_id': args.survey_unique_id
+    }
 
     # Write info extracted from rpSBMLs
     json_out_file = os.path.join(args.output_folder, 'network.json')
@@ -79,6 +108,8 @@ if __name__ == '__main__':
         ofh.write('network = ' + json.dumps(network, indent=4))
         ofh.write(os.linesep)
         ofh.write('pathways_info = ' + json.dumps(pathways_info, indent=4))
+        ofh.write(os.linesep)
+        ofh.write('contextual_info = ' + json.dumps(contextual_info, indent=4))
     
     # Write single HTML if requested
     if args.autonomous_html is not None:

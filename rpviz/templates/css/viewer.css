@@ -54,11 +54,34 @@ body {
     overflow-y: auto;
 }
 
-#pathway_selection > div#table_choice {
+#pathway_selection > div#table_contextual_info {
     max-height: 40em;
     overflow-x: hidden;
     overflow-y: auto;
 }
+
+#contextual_info > div#table_choice {
+    max-height: 40em;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Specific for survey */
+#outerdiv {
+    width:300px;
+    height:525px;
+    overflow:hidden;
+    position:relative;
+}
+
+#inneriframe {
+    position:absolute;
+    top:-225px;
+    left:0px;
+    width:300px;
+    height:1200px;
+}
+
 
 /* Central panel: the graph ***************************************************/
 #cy {
@@ -266,6 +289,20 @@ body {
 /* Nodes and edges CSS ********************************************************/
 /* Should be set directly at the cytoscape.js level  **************************/
 
+
+/* Table to display contextual info */
+#table_contextual_info table {
+    border: solid 1px #DDEEEE;
+    border-collapse: collapse;
+    border-spacing: 0;
+    /* font: normal 13px Arial, sans-serif; */
+}
+#table_contextual_info table tbody td {
+    border: solid 1px #DDEEEE;
+    color: #333;
+    padding: 0 10px 0 10px;
+    text-shadow: 1px 1px 1px #fff;
+}
 
 /* Table to select pathways ***************************************************/
 #table_choice table {

@@ -299,6 +299,36 @@ function build_pathway_table(){
 }
 
 /**
+ * Build the contextual info table
+ */
+function build_context_info_table(){
+    
+    // Data
+    let org_name = contextual_info['survey_chassis_name']
+    let target_name = contextual_info['survey_target_name']
+    
+    // Table skeleton
+    let table_base = $('<table></table>')
+    let table_body = $('<tbody></tbody>');
+    // Chassis name
+    let table_row = $('<tr></tr>');
+    table_row.append($('<td>Chassis:</td>'))
+    table_row.append($('<td></td>').html(org_name))
+    table_body.append(table_row);
+    // Target name
+    table_row = $('<tr></tr>');
+    table_row.append($('<td>Target:</td>'))
+    table_row.append($('<td></td>').html(target_name))
+    table_body.append(table_row);
+    // Done
+    table_base.append(table_body);
+
+    // Append the content to the HTML
+    $("#table_contextual_info").append(table_base);
+
+}
+
+/**
  * Collect checked pathways
  */
 function get_checked_pathways(){
@@ -642,11 +672,12 @@ $(function(){
     panel_reaction_info(null, false);
     panel_pathway_info(null, false);
     init_network(true);
-    annotate_hiddable_cofactors();  // Need to be done after init_network so the network is already loaded
     refresh_layout();
     show_cofactors(false);
     put_pathway_values('global_score');
     make_pathway_table_sortable();  // Should be called only after the table has been populated with values
+    // Specific for survey 
+    build_context_info_table();
 
     // Pathway Handler stuff
     window.path_handler = new PathwayHandler(cy, pathways_info);
@@ -844,47 +875,6 @@ $(function(){
         }
     }
 
-    /**
-     * Tag cofactor weither there could be hidden or not 
-     *
-     * If hidding cofactors lead to lonely / unconnected reactions then 
-     * cofactors related to sucbh reaction are marked as not hiddable.
-     * Otherwise, cofactors are marked as hiddable.
-     */
-    function annotate_hiddable_cofactors(){
-        cy.elements('node[type = "reaction"]').forEach((rxn_node, i) => {
-            // Check
-            let in_not_cof = rxn_node.incomers().filter('node[cofactor = 0]');
-            let out_not_cof = rxn_node.outgoers().filter('node[cofactor = 0]');
-            // Decide
-            let hiddable;
-            if (in_not_cof.length == 0 || out_not_cof.length == 0){
-                hiddable = 0;
-            } else {
-                hiddable = 1;
-            }
-            // Tag
-            let in_chems = rxn_node.incomers().filter('node');
-            in_chems.forEach((chem_node, j) => {
-                if (
-                    chem_node.data('cofactor') == 1 &&
-                    chem_node.data('hiddable_cofactor') != 0
-                ){
-                    chem_node.data('hiddable_cofactor', hiddable);
-                }
-            });
-            let out_chems = rxn_node.outgoers().filter('node');
-            out_chems.forEach((chem_node, j) => {
-                if (
-                    chem_node.data('cofactor' == 1) &&
-                    chem_node.data('hiddable_cofactor') != 0
-                ){
-                    chem_node.data('hiddable_cofactor', hiddable);
-                }
-            });
-        });
-    }
-
     /** Handle cofactor display
      *
      * Hide of show all nodes annotated as cofactor
@@ -895,7 +885,7 @@ $(function(){
         if (show){
             cy.elements().style("display", "element");
         } else {
-            cy.elements('node[cofactor = 1][hiddable_cofactor = 1]').style("display", "none");
+            cy.elements('node[cofactor = 1]').style("display", "none");
         }
         refresh_layout();
     }

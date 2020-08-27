@@ -111,35 +111,13 @@ def sbml_to_json(input_folder, pathway_id='rp_pathway', sink_species_group_id='r
                 node['xlinks'] = []
                 for xref in miriam_annot:
                     for ref in miriam_annot[xref]:
-                        # Refine EC annotations
-                        if xref == 'ec-code':
-                            # Getting rid of dashes
-                            old_ref = ref
-                            tmp = []
-                            for _ in ref.split('.'):
-                                if _ != '-':
-                                    tmp.append(_)
-                            ref = '.'.join(tmp)
-                            if old_ref != ref:
-                                logging.info('Refining EC number crosslinks from {} to {}'.format(old_ref, ref))
-                            # Use direct link to workaround generic ECs issue with identifiers.org
-                            try:
-                                node['xlinks'].append({
-                                    'db_name': 'intenz',
-                                    'entity_id': ref,
-                                    'url': 'https://www.ebi.ac.uk/intenz/query?cmd=SearchEC&ec=' + ref })
-                                logging.debug('Shunting identifiers.org to IntEnz crosslinks for EC number {}'.format(ref))
-                            except KeyError:
-                                pass
-                        # Generic case
-                        else:
-                            try:
-                                node['xlinks'].append({
-                                    'db_name': xref,
-                                    'entity_id': ref,
-                                    'url': 'http://identifiers.org/'+miriam_header['reaction'][xref]+str(ref)})
-                            except KeyError:
-                                pass
+                        try:
+                            node['xlinks'].append({
+                                'db_name': xref,
+                                'entity_id': ref,
+                                'url': 'http://identifiers.org/'+miriam_header['reaction'][xref]+str(ref)})
+                        except KeyError:
+                            pass
                 node['rsmiles'] = tmp_smiles
                 node['rule_id'] = brsynth_annot['rule_id']
                 try:
@@ -290,7 +268,7 @@ def sbml_to_json(input_folder, pathway_id='rp_pathway', sink_species_group_id='r
                     chem_nodes[node_id]['path_ids'].append(rpsbml.modelName)
                 # TODO: manage xref, without adding duplicates
                 try:
-                    assert brsynth_annot.get('smiles', None) == chem_nodes[node_id]['smiles']
+                    assert brsynth_annot['smiles'] == chem_nodes[node_id]['smiles']
                 except AssertionError:
                     try:
                         msg = 'Not the same SMILES: {} vs. {}'.format(
@@ -299,10 +277,10 @@ def sbml_to_json(input_folder, pathway_id='rp_pathway', sink_species_group_id='r
                         )
                         logging.warning(msg)
                     except KeyError:
-                        logging.warning('The brsynth_annot has no smiles: ' + str(node_id))
+                        logging.warning('The brsynth_annot has no smiles: '+str(node_id))
                         logging.info(brsynth_annot)
                 try:
-                    assert brsynth_annot.get('inchi', None) == chem_nodes[node_id]['inchi']
+                    assert brsynth_annot['inchi'] == chem_nodes[node_id]['inchi']
                 except AssertionError:
                     try:
                         msg = 'Not the same INCHI: {} vs. {}'.format(
@@ -311,10 +289,10 @@ def sbml_to_json(input_folder, pathway_id='rp_pathway', sink_species_group_id='r
                         )
                         logging.warning(msg)
                     except KeyError:
-                        logging.warning('The brsynth_annot has no inchi: ' + str(node_id))
+                        logging.warning('The brsynth_annot has no inchi: '+str(node_id))
                         logging.info(brsynth_annot)
                 try:
-                    assert brsynth_annot.get('inchikey', None) == chem_nodes[node_id]['inchikey']
+                    assert brsynth_annot['inchikey'] == chem_nodes[node_id]['inchikey']
                 except AssertionError:
                     try:
                         msg = 'Not the same INCHIKEY: {} vs. {}'.format(
@@ -323,7 +301,7 @@ def sbml_to_json(input_folder, pathway_id='rp_pathway', sink_species_group_id='r
                         )
                         logging.warning(msg)
                     except KeyError:
-                        logging.warning('The brsynth_annot has no inchi: ' + str(node_id))
+                        logging.warning('The brsynth_annot has no inchi: '+str(node_id))
                         logging.info(brsynth_annot)
             # Keep track for pathway info
             if node_id not in pathways_info[rpsbml.modelName]['node_ids']:

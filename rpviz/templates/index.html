@@ -62,6 +62,13 @@ __license__ = 'MIT'
 
         <div id="viewer">
             <div id="interaction" class="interact">
+                <div id="contextual_info">
+                    <div class="info-title">Contextual information</div>
+                    <div class="spacer"></div>
+                    <div id="table_contextual_info">
+                        <!-- Will be filled by viewer.js -->
+                    </div>
+                </div>
                 <div id="pathway_selection">
                     <div class="info-title">Pathway selection</div>
                     <div class="spacer"></div>
@@ -77,6 +84,19 @@ __license__ = 'MIT'
                     <div class="spacer"></div>
                     <input id="show_cofactors_button" type="button" value="Show cofactors"/>
                     <input id="remove_cofactors_button" type="button" value="Hide cofactors"/>
+                </div>
+                <!-- Survey form -->
+                <div id="form">
+                    <div class="info-title">Question</div>
+                    <div class="spacer"></div>
+                    <div id='outerdiv'>
+                      <iframe
+                        id='inneriframe'
+                        src="https://docs.google.com/forms/d/e/1FAIpQLSc0kF--xpzwXAYOFZD-AbXeWzp8WFm57xUXxmstPAhanUlGiA/viewform?embedded=true&entry.990950144=LANDMARK_SURVEY_ID"
+                        frameborder="0" marginheight="0" marginwidth="0">
+                          Loading…
+                      </iframe>
+                    </div>
                 </div>
             </div>
             <div id="cy"></div>
